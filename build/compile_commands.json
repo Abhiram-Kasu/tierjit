@@ -1,8 +1,0 @@
-[
-{
-  "directory": "/Users/abhiramkasu/cpp_projects/tierjit/build",
-  "command": "/usr/bin/c++ -I/opt/homebrew/Cellar/llvm/22.1.3/include -isystem /opt/homebrew/include -std=gnu++23 -arch arm64   -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -o CMakeFiles/tierjit.dir/src/main.cpp.o -c /Users/abhiramkasu/cpp_projects/tierjit/src/main.cpp",
-  "file": "/Users/abhiramkasu/cpp_projects/tierjit/src/main.cpp",
-  "output": "/Users/abhiramkasu/cpp_projects/tierjit/build/CMakeFiles/tierjit.dir/src/main.cpp.o"
-}
-]

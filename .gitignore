@@ -1,1 +1,30 @@
-build*
+# Build directories
+/build*/
+/cmake-build-*/
+
+# CMake and Ninja generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+Testing/
+build.ninja
+rules.ninja
+.ninja_deps
+.ninja_log
+compile_commands.json
+
+# Compiler output
+*.o
+*.obj
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+*.dSYM/
+/tierjit
+
+# Local caches and macOS metadata
+.cache/
+.DS_Store
