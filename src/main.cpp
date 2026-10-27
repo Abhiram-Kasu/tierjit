@@ -73,17 +73,21 @@ auto main() -> int {
     auto res = x + y;
     return res * res;
   };
-  std::println("time for native: {}", time([native_func]() {
-                                        volatile size_t res = 0;
-                                        for (auto i{0uz}; i < 2000; ++i) {
-                                          res += native_func(i, 2000 - i);
-                                        }
-                                      }) / 2000.0);
+
+  constexpr auto num_times_iter = 20000;
+  std::println("time for native: {}",
+               time([native_func]() {
+                 volatile size_t res = 0;
+                 for (auto i{0uz}; i < num_times_iter; ++i) {
+                   res += native_func(i, num_times_iter - i);
+                 }
+               }) / static_cast<double>(num_times_iter));
 
   std::println("time for jit: {}", time([func]() {
                                      volatile size_t res = 0;
-                                     for (auto i{0uz}; i < 2000; ++i) {
-                                       res += func(i, 2000 - i);
+                                     for (auto i{0uz}; i < num_times_iter;
+                                          ++i) {
+                                       res += func(i, num_times_iter - i);
                                      }
-                                   }) / 2000.0);
+                                   }) / static_cast<double>(num_times_iter));
 }
