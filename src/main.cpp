@@ -1,5 +1,6 @@
 
 #include "llvm/IR/DerivedTypes.h"
+#include <chrono>
 #include <llvm/ExecutionEngine/Orc/ExecutorProcessControl.h>
 #include <llvm/ExecutionEngine/Orc/LLJIT.h>
 #include <llvm/ExecutionEngine/Orc/ThreadSafeModule.h>
@@ -13,6 +14,12 @@
 #include <llvm/Support/TargetSelect.h>
 #include <memory>
 #include <print>
+
+auto time(auto &&func) -> std::chrono::nanoseconds {
+  auto start = std::chrono::steady_clock::now();
+  func();
+  return std::chrono::steady_clock::now() - start;
+}
 
 auto main() -> int {
   llvm::InitializeNativeTarget();
@@ -45,8 +52,9 @@ auto main() -> int {
 
   auto *a = begin;
   auto *b = begin + 1;
-  auto *result = builder.CreateAdd(a, b);
-  builder.CreateRet(result);
+  auto *result = builder.CreateAdd(a, b, "test", true, true);
+  auto squared = builder.CreateMul(result, result, "mul", true, true);
+  builder.CreateRet(squared);
 
   // 5. Verify the generated IR.
   if (verifyFunction(*fn, &llvm::errs())) {
@@ -59,7 +67,23 @@ auto main() -> int {
 
   auto symbol = check(jit_builder->lookup("add"));
 
-  auto func = symbol.toPtr<decltype(+[](int, int) { return int{}; })>();
+  auto func = symbol.toPtr<int (*)(int, int)>();
 
-  std::println("Result: {}", func(10, 200));
+  auto native_func = +[](int x, int y) {
+    auto res = x + y;
+    return res * res;
+  };
+  std::println("time for native: {}", time([native_func]() {
+                                        volatile size_t res = 0;
+                                        for (auto i{0uz}; i < 2000; ++i) {
+                                          res += native_func(i, 2000 - i);
+                                        }
+                                      }) / 2000.0);
+
+  std::println("time for jit: {}", time([func]() {
+                                     volatile size_t res = 0;
+                                     for (auto i{0uz}; i < 2000; ++i) {
+                                       res += func(i, 2000 - i);
+                                     }
+                                   }) / 2000.0);
 }
